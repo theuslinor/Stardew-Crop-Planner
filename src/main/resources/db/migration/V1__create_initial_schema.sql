@@ -7,7 +7,7 @@ CREATE TABLE crop(
     price_iridium INTEGER,
     recurring BOOLEAN DEFAULT FALSE,
     growth_time INTEGER NOT NULL,
-    regrowth_time INTEGERR,
+    regrowth_time INTEGER,
     season VARCHAR(20) NOT NULL
 );
 

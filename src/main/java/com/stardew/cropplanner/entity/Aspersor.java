@@ -8,11 +8,11 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Sprinkler {
+public class Aspersor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private Integer radius; // Raio de alcance
+    private String nome;
+    private Integer raio; // Raio de alcance
 }
