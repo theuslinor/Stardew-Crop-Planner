@@ -30,8 +30,7 @@ public class ControllerOtimizacao {
 
     @GetMapping("/melhores-culturas")
     public List<CulturaRetornoDTO> obterMelhoresCulturas(
-            @RequestParam Long jogadorId,
-            @RequestParam Integer custoSemente) {
+            @RequestParam Long jogadorId) {
 
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
@@ -40,7 +39,7 @@ public class ControllerOtimizacao {
         int diasRestantes = 28 - jogador.getDiaAtual();
 
         return culturas.stream()
-                .map(cultura -> servicoLucro.calcularRetorno(cultura, jogador, custoSemente, diasRestantes))
+                .map(cultura -> servicoLucro.calcularRetorno(cultura, jogador, diasRestantes))
                 .collect(Collectors.toList());
     }
 }
