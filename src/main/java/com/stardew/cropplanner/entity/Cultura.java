@@ -4,6 +4,8 @@ import com.stardew.cropplanner.enums.Estacao;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class Cultura {
@@ -18,6 +20,9 @@ public class Cultura {
     private boolean recorrente;
     private Integer tempoCrescimento;
     private Integer tempoRebrota;
+
+    @OneToMany(mappedBy = "cultura", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<FonteSemente> fontesPreco;
 
     @Enumerated(EnumType.STRING)
     private Estacao estacao;
