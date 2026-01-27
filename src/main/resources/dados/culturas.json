@@ -1,0 +1,31 @@
+[
+  {
+    "nome": "Chirivia",
+    "precoNormal": 35,
+    "precoPrata": 43,
+    "precoOuro": 52,
+    "precoIridium": 70,
+    "recorrente": false,
+    "tempoCrescimento": 4,
+    "tempoRebrota": 0,
+    "estacao": "PRIMAVERA",
+    "fontesPreco": [
+      {"localVenda": "PIERRE", "preco": 20},
+      {"localVenda": "JOJA", "preco": 25}
+    ]
+  },
+  {
+    "nome": "Morango",
+    "precoNormal": 120,
+    "precoPrata": 150,
+    "precoOuro": 180,
+    "precoIridium": 240,
+    "recorrente": true,
+    "tempoCrescimento": 8,
+    "tempoRebrota": 4,
+    "estacao": "PRIMAVERA",
+    "fontesPreco": [
+      {"localVenda": "EGG_FESTIVAL", "preco": 100}
+    ]
+  }
+]
