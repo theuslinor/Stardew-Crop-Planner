@@ -32,11 +32,12 @@ public class ControllerOtimizacao {
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
 
-        List<Cultura> culturas = culturaRepository.findByEstacao(jogador.getEstacaoAtual());
         int diasRestantes = 28 - jogador.getDiaAtual();
 
-        return culturas.stream()
+        return culturaRepository.findByEstacao(jogador.getEstacaoAtual()).stream()
                 .map(cultura -> servicoLucro.calcularRetorno(cultura, jogador, diasRestantes))
+                // ORDENAÇÃO: Comparamos o lucro diário da forma decrescente
+                .sorted((c1, c2) -> c2.getLucroDiario().compareTo(c1.getLucroDiario()))
                 .collect(Collectors.toList());
     }
 }

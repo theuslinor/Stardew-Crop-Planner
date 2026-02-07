@@ -10,14 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServicoLucro {
 
+    /**
+     * Calcula o retorno financeiro detalhado de uma cultura específica.
+     */
     public CulturaRetornoDTO calcularRetorno(Cultura cultura, EstadoJogador jogador, Integer diasRestantes) {
 
         // 1. MODIFICADORES DE VELOCIDADE (RF02)
-        // Calcula o tempo de crescimento real considerando a profissão Agricultor
         int tempoCrescimentoReal = calcularTempoCrescimentoReal(cultura.getTempoCrescimento(), jogador);
 
         // 2. GESTÃO DE CUSTOS (RF11)
-        // Busca o menor preço de semente disponível no banco de dados. Caso vazio, assume 0.
         int menorCustoSemente = 0;
         if (cultura.getFontesPreco() != null && !cultura.getFontesPreco().isEmpty()) {
             menorCustoSemente = cultura.getFontesPreco().stream()
@@ -32,57 +33,75 @@ public class ServicoLucro {
 
         if (diasRestantes >= tempoCrescimentoReal) {
             if (cultura.isRecorrente()) {
-                // Plantas que produzem continuamente (ex: Morango)
+                // Plantas recorrentes ocupam o solo até o fim da estação
                 colheitas = 1;
                 if (cultura.getTempoRebrota() != null && cultura.getTempoRebrota() > 0) {
                     int diasAposPrimeira = diasRestantes - tempoCrescimentoReal;
                     colheitas += (diasAposPrimeira / cultura.getTempoRebrota());
                 }
-                diasOcupados = diasRestantes; //Planta fica lá o mes todo
+                diasOcupados = diasRestantes;
             } else {
+                // Plantas únicas ocupam o solo apenas por um ciclo
                 colheitas = 1;
                 diasOcupados = tempoCrescimentoReal;
             }
         }
 
-        // 4. MODIFICADORES DE VENDA (RF01)
-        // Aplica o bônus de 10% da profissão Cultivador (Tiller)
-        int precoBase = cultura.getPrecoNormal();
-        int precoVenda = (jogador.getProfissao() == Profissao.CULTIVADOR)
-                ? (precoBase * 110) / 100
-                : precoBase;
+        // 4. CÁLCULO DE QUALIDADE E PREÇO MÉDIO (RF06)
+        // Substituímos o preço fixo por uma média ponderada baseada no nível de cultivo
+        boolean eCultivador = (jogador.getProfissao() == Profissao.CULTIVADOR);
+        double precoVendaMedio = calcularPrecoMedioPonderado(cultura, jogador.getNivelCultivo(), eCultivador);
 
         // 5. CÁLCULOS FINANCEIROS FINAIS
-        double receitaTotal = (double) colheitas * precoVenda;
-        double custoTotalSementes = (double) menorCustoSemente;
-        double lucroTotal = receitaTotal - custoTotalSementes;
+        double receitaTotal = (double) colheitas * precoVendaMedio;
+        double custoInvestimento = (double) menorCustoSemente;
+        double lucroTotal = receitaTotal - custoInvestimento;
 
+        // Cálculo de métricas diárias e ROI
         double lucroDiarioBruto = (diasOcupados > 0) ? (lucroTotal / diasOcupados) : 0;
-        double lucroDiario = Math.round(lucroDiarioBruto * 100) / 100.0;
-        double roi = (custoTotalSementes > 0) ? (lucroTotal / custoTotalSementes) * 100 : 0;
+
+        // Arredondamentos para 2 casas decimais para exibição limpa
+        double lucroTotalFinal = Math.round(lucroTotal * 100.0) / 100.0;
+        double lucroDiarioFinal = Math.round(lucroDiarioBruto * 100.0) / 100.0;
+        double roiFinal = (custoInvestimento > 0) ? Math.round((lucroTotal / custoInvestimento) * 10000.0) / 100.0 : 0;
 
         // 6. CONSTRUÇÃO DA RESPOSTA (DTO)
         return CulturaRetornoDTO.builder()
                 .nomeCultura(cultura.getNome())
-                .lucroTotal(lucroTotal)
-                .lucroDiario(lucroDiario)
-                .porcentagemRetorno(roi)
+                .lucroTotal(lucroTotalFinal)
+                .lucroDiario(lucroDiarioFinal)
+                .porcentagemRetorno(roiFinal)
                 .totalColheitas(colheitas)
                 .mensagem("Semente: " + menorCustoSemente + "g | Crescimento Real: " + tempoCrescimentoReal + " dias")
                 .build();
     }
 
     /**
-     * Calcula o tempo de crescimento real baseado nos bônus do jogador (RF02/RF03).
+     * Calcula o tempo de crescimento real baseado nos bônus do jogador (RF02).
      */
     private int calcularTempoCrescimentoReal(int diasOriginais, EstadoJogador jogador) {
         double bonusVelocidade = 0.0;
-
         if (jogador.getProfissao() == Profissao.AGRICULTOR) {
-            bonusVelocidade = 0.10; // Bônus de 10% de velocidade
+            bonusVelocidade = 0.10;
         }
-
-        // Teto(Dias / (1 + Bônus)) conforme especificado no PRD
         return (int) Math.ceil(diasOriginais / (1.0 + bonusVelocidade));
+    }
+
+    /**
+     * RF06 - Lógica de Probabilidade de Qualidade baseada no Farming Level.
+     */
+    private double calcularPrecoMedioPonderado(Cultura cultura, int nivelCultivo, boolean eCultivador) {
+        // Cálculo de probabilidades baseado no nível (Fórmulas simplificadas do jogo)
+        double chanceOuro = Math.min(0.75, (nivelCultivo * 0.07));
+        double chancePrata = Math.min(0.75, (nivelCultivo * 0.15));
+        double chanceNormal = Math.max(0, 1.0 - chanceOuro - chancePrata);
+
+        // Aplica modificador de profissão Cultivador se ativo
+        double pNormal = eCultivador ? (cultura.getPrecoNormal() * 1.1) : cultura.getPrecoNormal();
+        double pPrata = eCultivador ? (cultura.getPrecoPrata() * 1.1) : cultura.getPrecoPrata();
+        double pOuro = eCultivador ? (cultura.getPrecoOuro() * 1.1) : cultura.getPrecoOuro();
+
+        // Média ponderada pela probabilidade
+        return (pNormal * chanceNormal) + (pPrata * chancePrata) + (pOuro * chanceOuro);
     }
 }
