@@ -15,6 +15,20 @@
     ]
   },
   {
+    "nome": "Couve-flor",
+    "precoNormal": 175,
+    "precoPrata": 218,
+    "precoOuro": 262,
+    "precoIridium": 350,
+    "recorrente": false,
+    "tempoCrescimento": 12,
+    "tempoRebrota": 0,
+    "estacao": "PRIMAVERA",
+    "fontesPreco": [
+      {"localVenda": "PIERRE", "preco": 80}
+    ]
+  },
+  {
     "nome": "Morango",
     "precoNormal": 120,
     "precoPrata": 150,
@@ -25,7 +39,21 @@
     "tempoRebrota": 4,
     "estacao": "PRIMAVERA",
     "fontesPreco": [
-      {"localVenda": "EGG_FESTIVAL", "preco": 100}
+      {"localVenda": "FESTIVAL_OVO", "preco": 100}
+    ]
+  },
+  {
+    "nome": "Batata",
+    "precoNormal": 80,
+    "precoPrata": 100,
+    "precoOuro": 120,
+    "precoIridium": 160,
+    "recorrente": false,
+    "tempoCrescimento": 6,
+    "tempoRebrota": 0,
+    "estacao": "PRIMAVERA",
+    "fontesPreco": [
+      {"localVenda": "PIERRE", "preco": 50}
     ]
   }
 ]

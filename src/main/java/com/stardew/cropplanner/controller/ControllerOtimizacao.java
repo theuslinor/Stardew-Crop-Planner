@@ -6,6 +6,7 @@ import com.stardew.cropplanner.entity.EstadoJogador;
 import com.stardew.cropplanner.repository.CulturaRepository;
 import com.stardew.cropplanner.repository.EstadoJogadorRepository;
 import com.stardew.cropplanner.service.ServicoLucro;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,17 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/otimizar")
 public class ControllerOtimizacao {
 
-    @Autowired
-    private ServicoLucro servicoLucro;
-
-    @Autowired
-    private CulturaRepository culturaRepository;
-
-    @Autowired
-    private EstadoJogadorRepository estadoJogadorRepository;
+    private final ServicoLucro servicoLucro;
+    private final CulturaRepository culturaRepository;
+    private final EstadoJogadorRepository estadoJogadorRepository;
 
     @GetMapping("/melhores-culturas")
     public List<CulturaRetornoDTO> obterMelhoresCulturas(
