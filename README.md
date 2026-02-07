@@ -30,8 +30,7 @@ original do Stardew Valley.
 
 ## 🏗️ Estrutura do Projeto
 
-Arquitetura em camadas, seguindo padrões tradicionais de mercado, com
-domínio totalmente traduzido para **Português (PT-BR)**:
+Arquitetura em camadas, seguindo padrões tradicionais de mercado:
 
     src/main/java
     ├── controller/   # Endpoints da API REST
@@ -76,7 +75,6 @@ GET http://localhost:8080/api/otimizar/melhores-culturas?jogadorId=1&custoSement
 -   Cálculo de lucro com suporte a culturas recorrentes
 -   Aplicação de bônus da profissão **Cultivador**
 -   Arredondamentos conforme regras oficiais do jogo
--   Domínio totalmente em Português
 
 ------------------------------------------------------------------------
 
