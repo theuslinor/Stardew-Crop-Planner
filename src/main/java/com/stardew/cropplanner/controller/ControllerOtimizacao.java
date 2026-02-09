@@ -44,13 +44,14 @@ public class ControllerOtimizacao {
 
                     int precoSemente = cultura.getFontesPreco().stream()
                             .mapToInt(FonteSemente::getPreco).min().orElse(0);
-
-
+                    
                     int qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
 
                     dto.setQuantidadeSementes(qtd);
                     dto.setCustoTotalInvestimento(qtd * precoSemente);
                     dto.setLucroTotalProjeto(Math.round((dto.getLucroTotal() * qtd) * 100.0) / 100.0);
+
+                    dto.setMensagem(dto.getMensagem() + " | Espaço Total: " + limiteSoloEfetivo + " tiles");
 
                     return dto;
                 })
