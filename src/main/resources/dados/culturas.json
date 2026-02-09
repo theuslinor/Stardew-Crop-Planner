@@ -1,59 +1,115 @@
 [
   {
     "nome": "Chirivia",
-    "precoNormal": 35,
-    "precoPrata": 43,
-    "precoOuro": 52,
-    "precoIridium": 70,
-    "recorrente": false,
-    "tempoCrescimento": 4,
-    "tempoRebrota": 0,
-    "estacao": "PRIMAVERA",
-    "fontesPreco": [
-      {"localVenda": "PIERRE", "preco": 20},
-      {"localVenda": "JOJA", "preco": 25}
-    ]
+    "precoNormal": 35, "precoPrata": 43, "precoOuro": 52, "precoIridium": 70,
+    "recorrente": false, "tempoCrescimento": 4, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 20}, {"localVenda": "JOJA", "preco": 25}]
   },
   {
     "nome": "Couve-flor",
-    "precoNormal": 175,
-    "precoPrata": 218,
-    "precoOuro": 262,
-    "precoIridium": 350,
-    "recorrente": false,
-    "tempoCrescimento": 12,
-    "tempoRebrota": 0,
-    "estacao": "PRIMAVERA",
-    "fontesPreco": [
-      {"localVenda": "PIERRE", "preco": 80}
-    ]
-  },
-  {
-    "nome": "Morango",
-    "precoNormal": 120,
-    "precoPrata": 150,
-    "precoOuro": 180,
-    "precoIridium": 240,
-    "recorrente": true,
-    "tempoCrescimento": 8,
-    "tempoRebrota": 4,
-    "estacao": "PRIMAVERA",
-    "fontesPreco": [
-      {"localVenda": "FESTIVAL_OVO", "preco": 100}
-    ]
+    "precoNormal": 175, "precoPrata": 218, "precoOuro": 262, "precoIridium": 350,
+    "recorrente": false, "tempoCrescimento": 12, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 80}, {"localVenda": "JOJA", "preco": 100}]
   },
   {
     "nome": "Batata",
-    "precoNormal": 80,
-    "precoPrata": 100,
-    "precoOuro": 120,
-    "precoIridium": 160,
-    "recorrente": false,
-    "tempoCrescimento": 6,
-    "tempoRebrota": 0,
-    "estacao": "PRIMAVERA",
-    "fontesPreco": [
-      {"localVenda": "PIERRE", "preco": 50}
-    ]
+    "precoNormal": 80, "precoPrata": 100, "precoOuro": 120, "precoIridium": 160,
+    "recorrente": false, "tempoCrescimento": 6, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 50}, {"localVenda": "JOJA", "preco": 62}]
+  },
+  {
+    "nome": "Morango",
+    "precoNormal": 120, "precoPrata": 150, "precoOuro": 180, "precoIridium": 240,
+    "recorrente": true, "tempoCrescimento": 8, "tempoRebrota": 4, "estacao": "PRIMAVERA",
+    "diaDisponivel": 13,
+    "fontesPreco": [{"localVenda": "FESTIVAL", "preco": 100}]
+  },
+  {
+    "nome": "Alho",
+    "precoNormal": 60, "precoPrata": 75, "precoOuro": 90, "precoIridium": 110,
+    "recorrente": false, "tempoCrescimento": 4, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "anoDisponivel": 2,
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 40}]
+  },
+  {
+    "nome": "Ruibarbo",
+    "precoNormal": 220, "precoPrata": 275, "precoOuro": 330, "precoIridium": 440,
+    "recorrente": false, "tempoCrescimento": 13, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "fontesPreco": [{"localVenda": "OASIS", "preco": 100}]
+  },
+  {
+    "nome": "Cenoura",
+    "precoNormal": 35, "precoPrata": 43, "precoOuro": 52, "precoIridium": 70,
+    "recorrente": false, "tempoCrescimento": 3, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
+  },
+  {
+    "nome": "Melão",
+    "precoNormal": 250, "precoPrata": 312, "precoOuro": 375, "precoIridium": 500,
+    "recorrente": false, "tempoCrescimento": 12, "tempoRebrota": 0, "estacao": "VERAO",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 80}, {"localVenda": "JOJA", "preco": 100}]
+  },
+  {
+    "nome": "Mirtilo",
+    "precoNormal": 50, "precoPrata": 62, "precoOuro": 75, "precoIridium": 100,
+    "recorrente": true, "tempoCrescimento": 13, "tempoRebrota": 4, "estacao": "VERAO",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 80}]
+  },
+  {
+    "nome": "Carambola",
+    "precoNormal": 750, "precoPrata": 937, "precoOuro": 1125, "precoIridium": 1500,
+    "recorrente": false, "tempoCrescimento": 13, "tempoRebrota": 0, "estacao": "VERAO",
+    "fontesPreco": [{"localVenda": "OASIS", "preco": 400}]
+  },
+  {
+    "nome": "Couve-lombarda Vermelha",
+    "precoNormal": 260, "precoPrata": 325, "precoOuro": 390, "precoIridium": 520,
+    "recorrente": false, "tempoCrescimento": 9, "tempoRebrota": 0, "estacao": "VERAO",
+    "anoDisponivel": 2,
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 100}]
+  },
+  {
+    "nome": "Abóbora de Verão",
+    "precoNormal": 45, "precoPrata": 56, "precoOuro": 67, "precoIridium": 90,
+    "recorrente": true, "tempoCrescimento": 3, "tempoRebrota": 3, "estacao": "VERAO",
+    "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
+  },
+  {
+    "nome": "Abóbora",
+    "precoNormal": 320, "precoPrata": 400, "precoOuro": 480, "precoIridium": 640,
+    "recorrente": false, "tempoCrescimento": 13, "tempoRebrota": 0, "estacao": "OUTONO",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 100}, {"localVenda": "JOJA", "preco": 125}]
+  },
+  {
+    "nome": "Arroz Doce (Cranberries)",
+    "precoNormal": 75, "precoPrata": 93, "precoOuro": 112, "precoIridium": 150,
+    "recorrente": true, "tempoCrescimento": 7, "tempoRebrota": 5, "estacao": "OUTONO",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 240}, {"localVenda": "JOJA", "preco": 300}]
+  },
+  {
+    "nome": "Alcachofra",
+    "precoNormal": 160, "precoPrata": 200, "precoOuro": 240, "precoIridium": 320,
+    "recorrente": false, "tempoCrescimento": 8, "tempoRebrota": 0, "estacao": "OUTONO",
+    "anoDisponivel": 2,
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 30}]
+  },
+  {
+    "nome": "Brócolis",
+    "precoNormal": 70, "precoPrata": 87, "precoOuro": 105, "precoIridium": 140,
+    "recorrente": true, "tempoCrescimento": 8, "tempoRebrota": 4, "estacao": "OUTONO",
+    "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
+  },
+  {
+    "nome": "Uva",
+    "precoNormal": 80, "precoPrata": 100, "precoOuro": 120, "precoIridium": 160,
+    "recorrente": true, "tempoCrescimento": 10, "tempoRebrota": 3, "estacao": "OUTONO",
+    "fontesPreco": [{"localVenda": "PIERRE", "preco": 60}]
+  },
+  {
+    "nome": "Fruta Antiga",
+    "precoNormal": 550, "precoPrata": 687, "precoOuro": 825, "precoIridium": 1100,
+    "recorrente": true, "tempoCrescimento": 28, "tempoRebrota": 7, "estacao": "PRIMAVERA",
+    "requerDesbloqueio": true,
+    "fontesPreco": [{"localVenda": "MUSEU", "preco": 0}]
   }
 ]

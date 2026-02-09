@@ -27,4 +27,6 @@ public class EstadoJogador {
 
     @OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ItemInventario> inventarioAspersores;
+
+    private Integer anoAtual;
 }
