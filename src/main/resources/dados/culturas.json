@@ -40,7 +40,7 @@
   {
     "nome": "Cenoura",
     "precoNormal": 35, "precoPrata": 43, "precoOuro": 52, "precoIridium": 70,
-    "recorrente": false, "tempoCrescimento": 3, "tempoRebrota": 0, "estacao": "PRIMAVERA",
+    "recorrente": false, "tempoCrescimento": 3, "tempoRebrota": 0, "estacao": "PRIMAVERA", "podeSerComprada": false,
     "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
   },
   {
@@ -71,7 +71,7 @@
   {
     "nome": "Abóbora de Verão",
     "precoNormal": 45, "precoPrata": 56, "precoOuro": 67, "precoIridium": 90,
-    "recorrente": true, "tempoCrescimento": 3, "tempoRebrota": 3, "estacao": "VERAO",
+    "recorrente": true, "tempoCrescimento": 3, "tempoRebrota": 3, "estacao": "VERAO", "podeSerComprada": false,
     "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
   },
   {
@@ -96,7 +96,7 @@
   {
     "nome": "Brócolis",
     "precoNormal": 70, "precoPrata": 87, "precoOuro": 105, "precoIridium": 140,
-    "recorrente": true, "tempoCrescimento": 8, "tempoRebrota": 4, "estacao": "OUTONO",
+    "recorrente": true, "tempoCrescimento": 8, "tempoRebrota": 4, "estacao": "OUTONO", "podeSerComprada": false,
     "fontesPreco": [{"localVenda": "MAPA", "preco": 0}]
   },
   {
@@ -109,7 +109,7 @@
     "nome": "Fruta Antiga",
     "precoNormal": 550, "precoPrata": 687, "precoOuro": 825, "precoIridium": 1100,
     "recorrente": true, "tempoCrescimento": 28, "tempoRebrota": 7, "estacao": "PRIMAVERA",
-    "requerDesbloqueio": true,
+    "requerDesbloqueio": true, "podeSerComprada": false,
     "fontesPreco": [{"localVenda": "MUSEU", "preco": 0}]
   }
 ]
