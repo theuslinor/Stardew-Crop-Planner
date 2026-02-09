@@ -31,4 +31,6 @@ public class Cultura {
     private Integer diaDisponivel;
     private boolean requerDesbloqueio;
     private String localVendaPadrao;
+
+    private boolean podeSerComprada;
 }
