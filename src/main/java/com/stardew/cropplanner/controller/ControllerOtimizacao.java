@@ -3,6 +3,7 @@ package com.stardew.cropplanner.controller;
 import com.stardew.cropplanner.dto.CulturaRetornoDTO;
 import com.stardew.cropplanner.entity.Cultura;
 import com.stardew.cropplanner.entity.EstadoJogador;
+import com.stardew.cropplanner.entity.FonteSemente;
 import com.stardew.cropplanner.repository.CulturaRepository;
 import com.stardew.cropplanner.repository.EstadoJogadorRepository;
 import com.stardew.cropplanner.service.ServicoLucro;
@@ -27,17 +28,33 @@ public class ControllerOtimizacao {
 
     @GetMapping("/melhores-culturas")
     public List<CulturaRetornoDTO> obterMelhoresCulturas(
-            @RequestParam Long jogadorId) {
+            @RequestParam Long jogadorId,
+            @RequestParam(defaultValue = "0") Integer limiteSoloManual) {
 
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
 
+        int limiteSoloEfetivo = (limiteSoloManual > 0) ? limiteSoloManual : 100;
+
         int diasRestantes = 28 - jogador.getDiaAtual();
 
         return culturaRepository.findByEstacao(jogador.getEstacaoAtual()).stream()
-                .map(cultura -> servicoLucro.calcularRetorno(cultura, jogador, diasRestantes))
-                // ORDENAÇÃO: Comparamos o lucro diário da forma decrescente
-                .sorted((c1, c2) -> c2.getLucroDiario().compareTo(c1.getLucroDiario()))
+                .map(cultura -> {
+                    CulturaRetornoDTO dto = servicoLucro.calcularRetorno(cultura, jogador, diasRestantes);
+
+                    int precoSemente = cultura.getFontesPreco().stream()
+                            .mapToInt(FonteSemente::getPreco).min().orElse(0);
+
+
+                    int qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
+
+                    dto.setQuantidadeSementes(qtd);
+                    dto.setCustoTotalInvestimento(qtd * precoSemente);
+                    dto.setLucroTotalProjeto(Math.round((dto.getLucroTotal() * qtd) * 100.0) / 100.0);
+
+                    return dto;
+                })
+                .sorted((c1, c2) -> c2.getLucroTotalProjeto().compareTo(c1.getLucroTotalProjeto()))
                 .collect(Collectors.toList());
     }
 }

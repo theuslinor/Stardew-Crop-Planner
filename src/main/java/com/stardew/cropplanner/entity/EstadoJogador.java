@@ -11,13 +11,16 @@ public class EstadoJogador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Integer nivelCultivo;
-    private Integer ouroAtual;
+    private Integer ouroDisponivel;
     private Integer diaAtual;
+    private Integer espacoManual;
 
     @Enumerated(EnumType.STRING)
     private Estacao estacaoAtual;
 
     @Enumerated(EnumType.STRING)
     private Profissao profissao;
+
 }
