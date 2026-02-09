@@ -172,4 +172,20 @@ public class ServicoLucro {
                 .itens(itensSugerido)
                 .build();
     }
+
+    public boolean estaDisponivelParaCompra(Cultura cultura, EstadoJogador jogador){
+        if (cultura.getAnoDisponivel() != null && !jogador.getDiaAtual().equals(cultura.getDiaDisponivel())){
+            return false;
+        }
+
+        if (cultura.getDiaDisponivel() != null && !jogador.getDiaAtual().equals(cultura.getDiaDisponivel())){
+            return false;
+        }
+
+        if (cultura.isRequerDesbloqueio()){
+            return false;
+        }
+
+        return true;
+    }
 }
