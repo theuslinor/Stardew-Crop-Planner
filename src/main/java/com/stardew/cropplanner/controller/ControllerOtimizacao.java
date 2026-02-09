@@ -9,11 +9,7 @@ import com.stardew.cropplanner.repository.CulturaRepository;
 import com.stardew.cropplanner.repository.EstadoJogadorRepository;
 import com.stardew.cropplanner.service.ServicoLucro;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,26 +31,39 @@ public class ControllerOtimizacao {
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
 
+        // RF04 - Calcula o solo disponível (Soma manual + aspersores)
         int limiteSoloEfetivo = (limiteSoloManual > 0) ? limiteSoloManual
                 : (jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador));
 
         int diasRestantes = 28 - jogador.getDiaAtual();
 
         return culturaRepository.findByEstacao(jogador.getEstacaoAtual()).stream()
+                // Filtro de Calendário (Morango dia 13, Alho Ano 2, etc)
                 .filter(cultura -> servicoLucro.estaDisponivelParaCompra(cultura, jogador))
                 .map(cultura -> {
                     CulturaRetornoDTO dto = servicoLucro.calcularRetorno(cultura, jogador, diasRestantes);
 
+                    // Busca o menor preço de semente
                     int precoSemente = cultura.getFontesPreco().stream()
-                            .mapToInt(FonteSemente :: getPreco).min().orElse(0);
+                            .mapToInt(FonteSemente::getPreco).min().orElse(0);
 
-                    int qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
+                    // --- SOLUÇÃO PARA SEMENTES NÃO COMPRÁVEIS (Cenoura, etc) ---
+                    int qtd;
+                    String avisoEstoque = "";
+                    if (precoSemente > 0) {
+                        qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
+                    } else {
+                        // Se o preço é 0, o sistema não sabe quantas você achou no mapa.
+                        // Assumimos 0 para não "poluir" o lucro do projeto com dados fictícios.
+                        qtd = 0;
+                        avisoEstoque = " (Requer estoque manual)";
+                    }
 
                     dto.setQuantidadeSementes(qtd);
                     dto.setCustoTotalInvestimento(qtd * precoSemente);
                     dto.setLucroTotalProjeto(Math.round((dto.getLucroTotal() * qtd) * 100.0) / 100.0);
 
-                    dto.setMensagem(dto.getMensagem() + " | Solo Utilizado: " + limiteSoloEfetivo + " tiles");
+                    dto.setMensagem(dto.getMensagem() + " | Solo Utilizado: " + limiteSoloEfetivo + " tiles" + avisoEstoque);
 
                     return dto;
                 })
@@ -65,15 +74,17 @@ public class ControllerOtimizacao {
     @GetMapping("/plano-misto")
     public PlanoPlantioDTO obterPlanoMisto(
             @RequestParam Long jogadorId,
-            @RequestParam(required = false) List<Long> idsIgnorados){
+            @RequestParam(required = false) List<Long> idsIgnorados) {
+
+        // 1. Obtém o ranking base (reutilizando a lógica acima)
         List<CulturaRetornoDTO> rankingCompleto = obterMelhoresCulturas(jogadorId, 0);
 
+        // 2. Filtra as culturas que o usuário não quer ou não tem acesso
         List<CulturaRetornoDTO> rankingFiltrado = rankingCompleto.stream()
                 .filter(dto -> {
-                    //Se a lista de ignorados exisit, verifica se o ID da planta está nela
-                    // Precisamos buscar a cultura para saber o ID, ou adicionar o ID no DTO
-                    if (idsIgnorados == null) return true;
+                    if (idsIgnorados == null || idsIgnorados.isEmpty()) return true;
 
+                    // Busca a cultura no banco para validar o ID contra a lista de ignorados
                     Cultura c = culturaRepository.findByNomeIgnoreCase(dto.getNomeCultura()).orElse(null);
                     return c == null || !idsIgnorados.contains(c.getId());
                 })
@@ -84,6 +95,8 @@ public class ControllerOtimizacao {
 
         int espacoTotal = jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador);
 
-        return servicoLucro.gerarPlanoMix(rankingCompleto, jogador.getOuroDisponivel(), espacoTotal);
+        // --- CORREÇÃO AQUI ---
+        // Você deve passar o 'rankingFiltrado' e não o 'rankingCompleto'
+        return servicoLucro.gerarPlanoMix(rankingFiltrado, jogador.getOuroDisponivel(), espacoTotal);
     }
 }
