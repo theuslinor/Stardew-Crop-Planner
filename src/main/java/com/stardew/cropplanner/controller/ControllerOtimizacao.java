@@ -1,6 +1,7 @@
 package com.stardew.cropplanner.controller;
 
 import com.stardew.cropplanner.dto.CulturaRetornoDTO;
+import com.stardew.cropplanner.dto.PlanoPlantioDTO;
 import com.stardew.cropplanner.entity.Cultura;
 import com.stardew.cropplanner.entity.EstadoJogador;
 import com.stardew.cropplanner.entity.FonteSemente;
@@ -57,5 +58,17 @@ public class ControllerOtimizacao {
                 })
                 .sorted((c1, c2) -> c2.getLucroTotalProjeto().compareTo(c1.getLucroTotalProjeto()))
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/plano-misto")
+    public PlanoPlantioDTO obterPlanoMisto(@RequestParam Long jogadorId){
+        List<CulturaRetornoDTO> ranking = obterMelhoresCulturas(jogadorId, 0);
+
+        EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
+                .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+
+        int espacoTotal = jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador);
+
+        return servicoLucro.gerarPlanoMix(ranking, jogador.getOuroDisponivel(), espacoTotal);
     }
 }

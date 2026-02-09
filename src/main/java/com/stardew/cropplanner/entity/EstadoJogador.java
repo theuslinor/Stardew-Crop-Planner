@@ -5,6 +5,8 @@ import com.stardew.cropplanner.enums.Profissao;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class EstadoJogador {
@@ -23,4 +25,6 @@ public class EstadoJogador {
     @Enumerated(EnumType.STRING)
     private Profissao profissao;
 
+    @OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ItemInventario> inventarioAspersores;
 }
