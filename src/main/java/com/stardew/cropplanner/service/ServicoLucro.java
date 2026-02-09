@@ -104,4 +104,17 @@ public class ServicoLucro {
         // Média ponderada pela probabilidade
         return (pNormal * chanceNormal) + (pPrata * chancePrata) + (pOuro * chanceOuro);
     }
+
+    /**
+     * RF04 - Calcula a quantidade máxima de sementes que o jogador pode plantar
+     * beasedo no ouro disponivel e no limite de espaço fisico.
+     */
+    public int calcularQuantidadeMaxima(int precoSemente, int ouroDisponivel, int limiteSolo){
+        if (precoSemente <= 0) return limiteSolo;
+
+        int maxPorDinheiro = ouroDisponivel / precoSemente;
+
+        // O limite real é menor que o dinheiro e o espaço fisico
+        return Math.min(maxPorDinheiro, limiteSolo);
+    }
 }

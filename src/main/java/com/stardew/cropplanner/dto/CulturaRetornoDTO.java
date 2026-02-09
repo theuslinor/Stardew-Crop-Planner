@@ -13,4 +13,7 @@ public class CulturaRetornoDTO {
     private Double porcentagemRetorno;
     private Integer totalColheitas;
     private String mensagem;
+    private Integer quantidadeSementes;
+    private Double lucroTotalProjeto;
+    private Integer custoTotalInvestimento;
 }
