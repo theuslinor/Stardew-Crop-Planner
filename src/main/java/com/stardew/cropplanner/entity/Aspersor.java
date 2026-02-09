@@ -12,7 +12,6 @@ public class Aspersor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nome;
-    private Integer raio; // Raio de alcance
+    private Integer capacidade; // Raio de alcance
 }
