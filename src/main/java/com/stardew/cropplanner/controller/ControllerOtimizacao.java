@@ -1,6 +1,7 @@
 package com.stardew.cropplanner.controller;
 
 import com.stardew.cropplanner.dto.CulturaRetornoDTO;
+import com.stardew.cropplanner.dto.PlanoPlantioDTO;
 import com.stardew.cropplanner.entity.Cultura;
 import com.stardew.cropplanner.entity.EstadoJogador;
 import com.stardew.cropplanner.entity.FonteSemente;
@@ -34,28 +35,55 @@ public class ControllerOtimizacao {
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
 
-        int limiteSoloEfetivo = (limiteSoloManual > 0) ? limiteSoloManual : 100;
+        int limiteSoloEfetivo = (limiteSoloManual > 0) ? limiteSoloManual
+                : (jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador));
 
         int diasRestantes = 28 - jogador.getDiaAtual();
 
         return culturaRepository.findByEstacao(jogador.getEstacaoAtual()).stream()
+                .filter(cultura -> servicoLucro.estaDisponivelParaCompra(cultura, jogador))
                 .map(cultura -> {
                     CulturaRetornoDTO dto = servicoLucro.calcularRetorno(cultura, jogador, diasRestantes);
 
                     int precoSemente = cultura.getFontesPreco().stream()
-                            .mapToInt(FonteSemente::getPreco).min().orElse(0);
-                    
+                            .mapToInt(FonteSemente :: getPreco).min().orElse(0);
+
                     int qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
 
                     dto.setQuantidadeSementes(qtd);
                     dto.setCustoTotalInvestimento(qtd * precoSemente);
                     dto.setLucroTotalProjeto(Math.round((dto.getLucroTotal() * qtd) * 100.0) / 100.0);
 
-                    dto.setMensagem(dto.getMensagem() + " | Espaço Total: " + limiteSoloEfetivo + " tiles");
+                    dto.setMensagem(dto.getMensagem() + " | Solo Utilizado: " + limiteSoloEfetivo + " tiles");
 
                     return dto;
                 })
                 .sorted((c1, c2) -> c2.getLucroTotalProjeto().compareTo(c1.getLucroTotalProjeto()))
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/plano-misto")
+    public PlanoPlantioDTO obterPlanoMisto(
+            @RequestParam Long jogadorId,
+            @RequestParam(required = false) List<Long> idsIgnorados){
+        List<CulturaRetornoDTO> rankingCompleto = obterMelhoresCulturas(jogadorId, 0);
+
+        List<CulturaRetornoDTO> rankingFiltrado = rankingCompleto.stream()
+                .filter(dto -> {
+                    //Se a lista de ignorados exisit, verifica se o ID da planta está nela
+                    // Precisamos buscar a cultura para saber o ID, ou adicionar o ID no DTO
+                    if (idsIgnorados == null) return true;
+
+                    Cultura c = culturaRepository.findByNomeIgnoreCase(dto.getNomeCultura()).orElse(null);
+                    return c == null || !idsIgnorados.contains(c.getId());
+                })
+                .collect(Collectors.toList());
+
+        EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
+                .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+
+        int espacoTotal = jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador);
+
+        return servicoLucro.gerarPlanoMix(rankingCompleto, jogador.getOuroDisponivel(), espacoTotal);
     }
 }

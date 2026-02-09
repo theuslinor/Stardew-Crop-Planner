@@ -26,4 +26,9 @@ public class Cultura {
 
     @Enumerated(EnumType.STRING)
     private Estacao estacao;
+
+    private Integer anoDisponivel;
+    private Integer diaDisponivel;
+    private boolean requerDesbloqueio;
+    private String localVendaPadrao;
 }

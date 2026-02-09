@@ -1,11 +1,15 @@
 package com.stardew.cropplanner.service;
 
 import com.stardew.cropplanner.dto.CulturaRetornoDTO;
+import com.stardew.cropplanner.dto.ItemPlanoDTO;
+import com.stardew.cropplanner.dto.PlanoPlantioDTO;
 import com.stardew.cropplanner.entity.Cultura;
 import com.stardew.cropplanner.entity.EstadoJogador;
 import com.stardew.cropplanner.entity.FonteSemente;
 import com.stardew.cropplanner.enums.Profissao;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ServicoLucro {
@@ -116,5 +120,72 @@ public class ServicoLucro {
 
         // O limite real é menor que o dinheiro e o espaço fisico
         return Math.min(maxPorDinheiro, limiteSolo);
+    }
+
+    public int calcularLimiteSoloPorAspersor(EstadoJogador jogador){
+        if (jogador.getInventarioAspersores() == null ||jogador.getInventarioAspersores().isEmpty()){
+            return 0;
+        }
+
+        return jogador.getInventarioAspersores().stream()
+                .mapToInt(item -> item.getAspersor().getCapacidade() * item.getQuantidade())
+                .sum();
+    }
+
+    /**
+     * RF05 - Algoritmo Guloso para criar um mix de culturas que maximiza o lucro
+     */
+    public PlanoPlantioDTO gerarPlanoMix(List<CulturaRetornoDTO> ranking, int ouroDisponivel, int limiteSolo){
+        List<ItemPlanoDTO> itensSugerido = new java.util.ArrayList<>();
+        int ouroRestante = ouroDisponivel;
+        int soloRestante = limiteSolo;
+        double lucroTotalPlano = 0;
+
+        // O Ranking já vem ordenado por lucroDiario(melhores primeiro)
+        for (CulturaRetornoDTO cultura : ranking){
+            if (soloRestante <= 0 || ouroRestante <= 0) break;
+
+            // Recupera o custo de UMA unidade (Custo total / qtd sementes calculada no ranking)
+            int custoUnidade = (int) (cultura.getCustoTotalInvestimento() / cultura.getQuantidadeSementes());
+            int qtdPorDinheiro = ouroRestante / custoUnidade;
+            int qtdFinal = Math.min(qtdPorDinheiro, soloRestante);
+
+            if (custoUnidade > ouroRestante) continue;
+
+            if (qtdFinal > 0){
+                itensSugerido.add(new ItemPlanoDTO(
+                        cultura.getNomeCultura(),
+                        qtdFinal,
+                        cultura.getLucroTotal() * qtdFinal
+                ));
+
+                ouroRestante -= (qtdFinal * custoUnidade);
+                soloRestante -= qtdFinal;
+                lucroTotalPlano += (cultura.getLucroTotal() * qtdFinal);
+            }
+        }
+
+        return PlanoPlantioDTO.builder()
+                .lucroTotalEstimado(Math.round(lucroTotalPlano * 100.0) / 100.0)
+                .ouroRestante(ouroRestante)
+                .espacoRestante(soloRestante)
+                .itens(itensSugerido)
+                .build();
+    }
+
+    public boolean estaDisponivelParaCompra(Cultura cultura, EstadoJogador jogador){
+        if (cultura.getAnoDisponivel() != null && !jogador.getDiaAtual().equals(cultura.getDiaDisponivel())){
+            return false;
+        }
+
+        if (cultura.getDiaDisponivel() != null && !jogador.getDiaAtual().equals(cultura.getDiaDisponivel())){
+            return false;
+        }
+
+        if (cultura.isRequerDesbloqueio()){
+            return false;
+        }
+
+        return true;
     }
 }
