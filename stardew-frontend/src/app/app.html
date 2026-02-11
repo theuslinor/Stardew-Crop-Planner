@@ -1,0 +1,28 @@
+<div class="min-h-screen p-8 bg-[#e9c68a] text-[#5c3a21]">
+  <div class="max-w-4xl mx-auto bg-[#f4d19b] border-8 border-[#5c3a21] rounded-xl p-6 shadow-2xl">
+    <h1 class="text-4xl font-bold text-center mb-8 uppercase tracking-widest border-b-4 border-[#5c3a21] pb-4">
+      📋 Ranking de Culturas
+    </h1>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+        <tr class="bg-[#5c3a21] text-white uppercase text-sm">
+          <th class="p-3">Cultura</th>
+          <th class="p-3">Lucro Diário</th>
+          <th class="p-3">Lucro Projeto</th>
+          <th class="p-3">Sementes</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-[#5c3a21]">
+        <tr *ngFor="let c of ranking" class="hover:bg-[#eec68b] transition-colors">
+          <td class="p-3 font-bold">{{ c.nomeCultura }}</td>
+          <td class="p-3">{{ c.lucroDiario | number:'1.2-2' }}g</td>
+          <td class="p-3 text-green-800 font-bold">{{ c.lucroTotalProjeto | number:'1.2-2' }}g</td>
+          <td class="p-3">{{ c.quantidadeSementes }}un</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

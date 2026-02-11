@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/otimizar")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ControllerOtimizacao {
 
     private final ServicoLucro servicoLucro;
@@ -47,7 +48,6 @@ public class ControllerOtimizacao {
                     int precoSemente = cultura.getFontesPreco().stream()
                             .mapToInt(FonteSemente::getPreco).min().orElse(0);
 
-                    // --- SOLUÇÃO PARA SEMENTES NÃO COMPRÁVEIS (Cenoura, etc) ---
                     int qtd;
                     String avisoEstoque = "";
                     if (precoSemente > 0) {
@@ -76,15 +76,12 @@ public class ControllerOtimizacao {
             @RequestParam Long jogadorId,
             @RequestParam(required = false) List<Long> idsIgnorados) {
 
-        // 1. Obtém o ranking base (reutilizando a lógica acima)
         List<CulturaRetornoDTO> rankingCompleto = obterMelhoresCulturas(jogadorId, 0);
 
-        // 2. Filtra as culturas que o usuário não quer ou não tem acesso
         List<CulturaRetornoDTO> rankingFiltrado = rankingCompleto.stream()
                 .filter(dto -> {
                     if (idsIgnorados == null || idsIgnorados.isEmpty()) return true;
 
-                    // Busca a cultura no banco para validar o ID contra a lista de ignorados
                     Cultura c = culturaRepository.findByNomeIgnoreCase(dto.getNomeCultura()).orElse(null);
                     return c == null || !idsIgnorados.contains(c.getId());
                 })
@@ -95,8 +92,6 @@ public class ControllerOtimizacao {
 
         int espacoTotal = jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador);
 
-        // --- CORREÇÃO AQUI ---
-        // Você deve passar o 'rankingFiltrado' e não o 'rankingCompleto'
         return servicoLucro.gerarPlanoMix(rankingFiltrado, jogador.getOuroDisponivel(), espacoTotal);
     }
 }
