@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/otimizar")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200") // Permite a comunicação com o Frontend Angular
 public class ControllerOtimizacao {
 
     private final ServicoLucro servicoLucro;
@@ -32,7 +32,7 @@ public class ControllerOtimizacao {
         EstadoJogador jogador = estadoJogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
 
-        // RF04 - Calcula o solo disponível (Soma manual + aspersores)
+        // RF04 - Calcula o solo disponível (Soma manual + aspersores do inventário)
         int limiteSoloEfetivo = (limiteSoloManual > 0) ? limiteSoloManual
                 : (jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador));
 
@@ -44,17 +44,19 @@ public class ControllerOtimizacao {
                 .map(cultura -> {
                     CulturaRetornoDTO dto = servicoLucro.calcularRetorno(cultura, jogador, diasRestantes);
 
-                    // Busca o menor preço de semente
+                    // Busca o menor preço de semente disponível no banco
                     int precoSemente = cultura.getFontesPreco().stream()
                             .mapToInt(FonteSemente::getPreco).min().orElse(0);
 
+                    // --- SOLUÇÃO PARA SEMENTES NÃO COMPRÁVEIS (Cenoura, etc) ---
                     int qtd;
                     String avisoEstoque = "";
                     if (precoSemente > 0) {
+                        // Se custa ouro, calcula com base no bolso e solo
                         qtd = servicoLucro.calcularQuantidadeMaxima(precoSemente, jogador.getOuroDisponivel(), limiteSoloEfetivo);
                     } else {
-                        // Se o preço é 0, o sistema não sabe quantas você achou no mapa.
-                        // Assumimos 0 para não "poluir" o lucro do projeto com dados fictícios.
+                        // Se o preço é 0, o sistema não sabe quantas o jogador tem no inventário.
+                        // Assumimos 0 para evitar projeções de lucro irreais (RF11).
                         qtd = 0;
                         avisoEstoque = " (Requer estoque manual)";
                     }
@@ -67,6 +69,7 @@ public class ControllerOtimizacao {
 
                     return dto;
                 })
+                // Ordena pelo lucro total do projeto (priorizando o retorno financeiro real)
                 .sorted((c1, c2) -> c2.getLucroTotalProjeto().compareTo(c1.getLucroTotalProjeto()))
                 .collect(Collectors.toList());
     }
@@ -76,12 +79,15 @@ public class ControllerOtimizacao {
             @RequestParam Long jogadorId,
             @RequestParam(required = false) List<Long> idsIgnorados) {
 
+        // 1. Obtém o ranking base (reutilizando a lógica de melhores culturas)
         List<CulturaRetornoDTO> rankingCompleto = obterMelhoresCulturas(jogadorId, 0);
 
+        // 2. Filtra as culturas que o usuário não quer ou não tem acesso no momento
         List<CulturaRetornoDTO> rankingFiltrado = rankingCompleto.stream()
                 .filter(dto -> {
                     if (idsIgnorados == null || idsIgnorados.isEmpty()) return true;
 
+                    // Busca a cultura no banco para validar o ID contra a lista de ignorados vinda do Front
                     Cultura c = culturaRepository.findByNomeIgnoreCase(dto.getNomeCultura()).orElse(null);
                     return c == null || !idsIgnorados.contains(c.getId());
                 })
@@ -92,6 +98,7 @@ public class ControllerOtimizacao {
 
         int espacoTotal = jogador.getEspacoManual() + servicoLucro.calcularLimiteSoloPorAspersor(jogador);
 
+        // 3. Gera o plano inteligente usando apenas o ranking que passou pelo filtro
         return servicoLucro.gerarPlanoMix(rankingFiltrado, jogador.getOuroDisponivel(), espacoTotal);
     }
 }
